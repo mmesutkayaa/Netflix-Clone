@@ -9,7 +9,7 @@ import UIKit
 
 class HomeViewController: UIViewController {
     
-    let sectionTitles: [String] = ["Trending Movies", "Trending TV", "Popular", "Upcoming Movies", "Top Rated"]
+    let sectionTitles: [String] = ["TRENDING MOVIES", "TRENDING TV", "POPULAR", "UPCOMING MOVIES", "TOP RATED"]
     
     private let homeFeedTable: UITableView = {
         
@@ -30,6 +30,9 @@ class HomeViewController: UIViewController {
         
         let headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
         homeFeedTable.tableHeaderView = headerView
+        
+        fetchData()
+        
     }
     
     private func configureNavbar() {
@@ -37,15 +40,20 @@ class HomeViewController: UIViewController {
         var image = UIImage(named: "netflixLogo")
         image = image?.withRenderingMode(.alwaysOriginal)
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: image, style: .done, target: self, action: nil)
+        /*let leftBarButton = UIBarButtonItem(image: image, style: .done, target: self, action: nil)
         
-        /*
-        let icon = UIImage(named: "netflixLogo")
-        let iconSize = CGRect(origin: CGPoint.zero, size: CGSize(width: 10, height: 10))
-        let iconButton = UIButton(frame: iconSize)
-        iconButton.setBackgroundImage(icon, for: .normal)
-        let barButton = UIBarButtonItem(customView: iconButton)
-        navigationItem.leftBarButtonItem = barButton */
+        navigationItem.leftBarButtonItem = leftBarButton */
+        
+        let button = UIButton(type: .system)
+        button.setImage(image, for: .normal)
+
+        let menuBarItem = UIBarButtonItem(customView: button)
+        menuBarItem.customView?.translatesAutoresizingMaskIntoConstraints = false
+        menuBarItem.customView?.heightAnchor.constraint(equalToConstant: 33).isActive = true
+        menuBarItem.customView?.widthAnchor.constraint(equalToConstant: 19).isActive = true
+
+        navigationItem.leftBarButtonItem = menuBarItem
+        
         
         navigationItem.rightBarButtonItems = [
             UIBarButtonItem(image: UIImage(systemName: "person"), style: .done, target: self, action: nil),
@@ -57,6 +65,38 @@ class HomeViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         homeFeedTable.frame = view.bounds
+    }
+    
+    private func fetchData() {
+        /*
+        APICaller.shared.getTrendingMovies { results in
+            
+            switch results {
+            case .success(let movies):
+                print(movies)
+            case .failure(let error):
+                print(error)
+            }
+        }
+         
+        
+        APICaller.shared.getTrendingTvs { results in
+            //
+        }
+                
+        APICaller.shared.getUpcomingMovies { _ in
+            
+        }
+         
+
+        APICaller.shared.getPopularMovies { _ in
+            //
+        }
+         */
+        APICaller.shared.getTopRated { _ in
+            //
+        }
+        
     }
 }
 
@@ -73,7 +113,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CollectionViewTableViewCell.identifier, for: indexPath) as? CollectionViewTableViewCell else {
             return UITableViewCell()
-            
         }
         return cell
     }
@@ -90,6 +129,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         guard let header = view as? UITableViewHeaderFooterView else {return}
         header.textLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
         header.textLabel?.frame = CGRect(x: header.bounds.origin.x + 20, y: header.bounds.origin.y, width: 100, height: header.bounds.height)
+        header.textLabel?.textColor = .white
+        header.textLabel?.text = header.textLabel?.text?.capitalizeFirstLetter()
+        
     }
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return sectionTitles[section]
@@ -101,4 +143,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         
         navigationController?.navigationBar.transform = .init(translationX: 0, y: min(0, -offset))
     }
+
+
 }
