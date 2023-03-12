@@ -10,6 +10,8 @@ import Foundation
 struct Constants {
     static let API_KEY = "5de15512373104e71e88fe8a4ee53221"
     static let baseURL = "https://api.themoviedb.org"
+    static let youtubeAPI_KEY = "AIzaSyA1jl1936F-dAl9PqNnNE9houJsn9gJWNc"
+    static let youtubeBaseURL = "https://youtube.googleapis.com/youtube/v3/search?"
 }
 
 enum APIError: Error  {
@@ -128,6 +130,24 @@ class APICaller {
         }
         task.resume()
     }
+    
+    func getMovie(with query: String, completion: @escaping (Result<VideoElement, Error>) -> Void) {
+        
+        guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {return}
+        guard let url = URL(string: "\(Constants.youtubeBaseURL)q=\(query)&key=\(Constants.youtubeAPI_KEY)") else {return}
+        
+        let task = URLSession.shared.dataTask(with: url) { data, _, error in
+            guard let data = data, error == nil else {return}
+            do {
+                let results = try JSONDecoder().decode(YoutubeSearchResponse.self, from: data)
+                completion(.success(results.items[0])) // en iyi sonucu gostermek istedigimiz icin ilk elemanı sectik
+            } catch {
+                completion(.failure(error))
+                print(error.localizedDescription)
+            }
+        }
+        task.resume()
+    } 
 }
 
 // https://api.themoviedb.org/3/movie/upcoming?api_key=<<api_key>>&language=en-US&page=1

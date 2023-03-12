@@ -41,6 +41,7 @@ class HomeViewController: UIViewController {
         
         
         
+        
     }
     
     private func configureNavbar() {
@@ -68,6 +69,7 @@ class HomeViewController: UIViewController {
             UIBarButtonItem(image: UIImage(systemName: "play.rectangle"), style: .done, target: self, action: nil)
         ]
         navigationController?.navigationBar.tintColor = .white
+        
     }
     
     override func viewDidLayoutSubviews() {
